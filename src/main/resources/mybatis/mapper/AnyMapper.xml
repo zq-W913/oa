@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.offcn.pro.dao.AnalysisDao">
+    <select id="showAll" resultMap="anyMap">
+        select * from analysis
+    </select>
+    <resultMap id="anyMap" type="com.offcn.pro.bean.AnalysisBean">
+        <id property="id" column="id"/>
+        <association property="project" column="id" javaType="com.offcn.pro.bean.ProjectBean"
+        select="com.offcn.pro.dao.ProjectDao.getProById"/>
+    </resultMap>
+    <delete id="delanyById">
+        delete from analysis where id in
+        <foreach collection="array" open="(" close=")" item="pid" separator=",">
+            #{pid}
+        </foreach>
+    </delete>
+    <insert id="commit" parameterType="com.offcn.pro.bean.AnalysisBean">
+        insert into analysis (id, title, simpledis, detaileddis, addtime, updatetime, remark) values
+     (#{id},#{title},#{simpledis},#{detaileddis},now(),now(),#{remark})
+    </insert>
+    <select id="getAnyByPK" resultMap="anyMap">
+        select * from analysis where id = #{0}
+    </select>
+    <update id="updata" parameterType="com.offcn.pro.bean.AnalysisBean">
+        update analysis set title=#{title},simpledis=#{simpledis},detaileddis=#{detaileddis},
+        updatetime=now(),remark=#{remark} where id=#{id}
+    </update>
+</mapper>

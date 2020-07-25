@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.offcn.auth.dao.SourceDao">
+
+    <!--查询最外层菜单-->
+    <select id="findAll" resultMap="sourceMap">
+        select * from sources where pid=0
+    </select>
+
+    <resultMap id="sourceMap" type="com.offcn.auth.bean.SourcesBean">
+        <id property="id" column="id"/>
+        <collection property="children" column="id" ofType="com.offcn.auth.bean.SourcesBean"
+        select="getSourceByPid"></collection>
+    </resultMap>
+
+    <select id="getSourceByPid" resultMap="sourceMap">
+        select * from sources where  pid=#{0}
+    </select>
+
+    <select id="getSourceByRoleid" resultType="com.offcn.auth.bean.RoleSourcesBean">
+        select * from role_sources where roleid=#{0}
+    </select>
+    <!--根据用户eid查询用户的权限-->
+    <select id="getSourceByEid" resultType="com.offcn.auth.bean.SourcesBean">
+        select distinct  s.* from  emp_role er,role r  ,role_sources rs,sources s
+        where er.role_fk=r.roleid and er.emp_fk=#{0}
+        and r.roleid=rs.roleid and rs.sid=s.id
+    </select>
+</mapper>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.offcn.pro.dao.ModuleDao">
+    <select id="showAll" resultMap="modMap">
+        select * from module
+    </select>
+    <resultMap id="modMap" type="com.offcn.pro.bean.ModuleBean">
+        <id property="id" column="id"/>
+        <result property="analysisFk" column="analysis_Fk"/>
+        <association property="project" column="analysis_Fk" javaType="com.offcn.pro.bean.ProjectBean"
+                     select="com.offcn.pro.dao.ProjectDao.getProById"/>
+        <association property="analysis" column="analysis_Fk" javaType="com.offcn.pro.bean.AnalysisBean"
+                     select="com.offcn.pro.dao.AnalysisDao.getAnyByPK"/>
+    </resultMap>
+    <delete id="delModById">
+        delete from module where id in
+        <foreach collection="array" open="(" close=")" item="pid" separator=",">
+            #{pid}
+        </foreach>
+    </delete>
+    <insert id="commit" parameterType="com.offcn.pro.bean.ModuleBean">
+        insert into module (analysis_fk, modname, level, simpledis, detaileddis, remark) values
+        (#{analysisFk},#{modname},#{level},#{simpledis},#{detaileddis},#{remark});
+    </insert>
+    <select id="getModuleByPk" resultMap="modMap">
+        select * from module where id=#{0}
+    </select>
+    <update id="update" parameterType="com.offcn.pro.bean.ModuleBean">
+        update module set modname=#{modname},level=#{level},simpledis=#{simpledis},
+        detaileddis=#{detaileddis},remark=#{remark} where id=#{id}
+    </update>
+    <select id="getModuleByid" resultMap="modMap">
+        select * from module where analysis_fk=#{0}
+    </select>
+</mapper>

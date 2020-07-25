@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.offcn.usual.dao.ArchivesDao">
+    <select id="showAll" resultMap="arcMap">
+        select * from archives
+    </select>
+    <resultMap id="arcMap" type="com.offcn.usual.bean.ArchivesBean">
+        <id property="dnum" column="dnum"/>
+        <result property="empFk" column="emp_fk"/>
+        <association property="employee" column="emp_fk" javaType="com.offcn.auth.bean.EmployeeBean"
+        select="com.offcn.auth.dao.EmployeeDao.getEmpById"/>
+    </resultMap>
+    <delete id="delarcById">
+        delete from archives where dnum in
+        <foreach collection="array" open="(" close=")" item="pid" separator=",">
+            #{pid}
+        </foreach>
+    </delete>
+</mapper>

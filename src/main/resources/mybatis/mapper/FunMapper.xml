@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.offcn.pro.dao.FunctionDao">
+    <select id="showAll" resultMap="funMap">
+        select * from function
+    </select>
+    <resultMap id="funMap" type="com.offcn.pro.bean.FunctionBean">
+        <id property="id" column="id"/>
+        <result property="modeleFk" column="modele_Fk"/>
+        <association property="module" column="modele_Fk" javaType="com.offcn.pro.bean.ModuleBean"
+                     select="com.offcn.pro.dao.ModuleDao.getModuleByPk"/>
+    </resultMap>
+    <delete id="delFunById">
+        delete from function where id in
+        <foreach collection="array" open="(" close=")" item="pid" separator=",">
+            #{pid}
+        </foreach>
+    </delete>
+    <insert id="commit" parameterType="com.offcn.pro.bean.FunctionBean">
+        insert into function (modele_fk, functionname, level, simpledis, detaileddis, remark) values
+        (#{modeleFk},#{functionname},#{level},#{simpledis},#{detaileddis},#{remark});
+    </insert>
+    <select id="getFunByMid" resultMap="funMap">
+        select * from function where modele_fk=#{0}
+    </select>
+</mapper>

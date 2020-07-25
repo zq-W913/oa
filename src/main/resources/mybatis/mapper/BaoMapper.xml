@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.offcn.usual.dao.BaoxiaoDao">
+    <select id="showAll" resultMap="baoMap">
+        select * from baoxiao
+    </select>
+    <resultMap id="baoMap" type="com.offcn.usual.bean.BaoxiaoBean">
+        <id column="bxid" property="bxid"/>
+        <result column="paymode" property="paymode"/>
+        <result column="emp_Fk" property="empFk"/>
+        <association property="employee" column="emp_Fk" javaType="com.offcn.auth.bean.EmployeeBean"
+                     select="com.offcn.auth.dao.EmployeeDao.getEmpById"/>
+        <association property="exp" column="paymode" javaType="com.offcn.usual.bean.ExpendituretypeBean"
+                     select="getExtendTypeByPk"/>
+        <collection property="replayList" column="bxid" ofType="com.ujiuye.usual.bean.BaoxiaoreplyBean"
+                    select="com.offcn.usual.dao.BaoRepDao.getReplayByBxid"/>
+    </resultMap>
+    <!--根据主键查找支出类型-->
+    <select id="getExtendTypeByPk" resultType="com.offcn.usual.bean.ExpendituretypeBean">
+        select * from expendituretype where etid=#{0}
+    </select>
+
+    <select id="getBxById" resultMap="baoMap">
+        select * from baoxiao where bxid=#{0}
+    </select>
+    <update id="commit" parameterType="com.offcn.usual.bean.BaoxiaoBean">
+         update baoxiao set bxstatus=#{bxstatus} where bxid=#{bxid}
+    </update>
+    <select id="getBxByEid" resultMap="baoMap">
+        select * from baoxiao where emp_fk=#{0}
+    </select>
+    <select id="getAllBxModel" resultType="com.offcn.usual.bean.ExpendituretypeBean">
+        select * from expendituretype
+    </select>
+    <update id="updata" parameterType="com.offcn.usual.bean.BaoxiaoBean">
+        update baoxiao set paymode=#{paymode},totalmoney=#{totalmoney},bxtime=#{bxtime},bxremark=#{bxremark},bxstatus=0 where bxid=#{bxid};
+    </update>
+</mapper>

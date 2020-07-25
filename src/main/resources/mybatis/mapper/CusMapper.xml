@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.offcn.cus.dao.CustomerDao">
+    <select id="showAll" resultType="com.offcn.cus.bean.CustomerBean">
+        select * from customer
+        <where>
+            <if test="type==1"> <!--  1公司名-->
+                and comname like concat('%',concat(#{keyword},'%'))
+            </if>
+            <if test="type==2"> <!-- 2,联系人-->
+                and companyperson like concat('%',concat(#{keyword},'%'))
+            </if>
+        </where>
+        order  by id
+        <if test="orderby==2">
+            desc
+        </if>
+    </select>
+    <delete id="delCusById">
+        delete from customer where id in
+        <foreach collection="array" open="(" close=")" item="eid" separator=",">
+            #{eid}
+        </foreach>
+    </delete>
+    <insert id="uploadExcel" parameterType="com.offcn.cus.bean.CustomerBean">
+        insert into customer (comname, companyperson, comaddress, comphone, present, remark, addtime) values
+        <foreach collection="list" item="cus" separator=",">
+            (#{cus.comname},#{cus.companyperson},#{cus.comaddress},#{cus.comphone},#{cus.present},#{cus.remark},#{cus.createtime})
+        </foreach>
+    </insert>
+    <select id="selCusById" resultType="com.offcn.cus.bean.CustomerBean">
+        select * from customer where id=#{id}
+    </select>
+</mapper>

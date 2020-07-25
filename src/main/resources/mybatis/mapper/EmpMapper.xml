@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.offcn.auth.dao.EmployeeDao">
+    <select id="findEmpByNameAndPsw" resultType="com.offcn.auth.bean.EmployeeBean" parameterType="com.offcn.auth.bean.EmployeeBean">
+        select * from employee where username=#{username} and password=#{password}
+    </select>
+
+    <select id="getEmpById" resultMap="empMap">
+        select * from employee where eid=#{eid}
+    </select>
+    <resultMap id="empMap" type="com.offcn.auth.bean.EmployeeBean">
+        <id property="eid" column="eid"/>
+        <result property="pFk" column="p_fk"/>
+        <association property="position" column="p_fk" javaType="com.offcn.auth.bean.PositionBean"
+                     select="com.offcn.auth.dao.PositionDao.getPositionBeanById"/>
+        <collection property="empRoleList" column="eid" ofType="com.offcn.auth.bean.EmpRoleBean"
+                    select="com.offcn.auth.dao.RoleDao.getRoleByEid"/>
+    </resultMap>
+    <select id="showAll" resultMap="empMap">
+        select * from employee
+    </select>
+    <delete id="delEmpById">
+        delete from employee where eid in
+        <foreach collection="array" open="(" close=")" item="eid" separator=",">
+            #{eid}
+        </foreach>
+    </delete>
+    <select id="getEmpByPfk" resultType="com.offcn.auth.bean.EmployeeBean">
+        select * from employee where p_fk=#{0}
+    </select>
+    <!--根据主键修改员工信息-->
+    <update id="updateEmp" parameterType="com.offcn.auth.bean.EmployeeBean">
+        update employee set ename=#{ename}, esex=#{esex}, eage=#{eage}, telephone=#{telephone},
+         hiredate=#{hiredate}, pnum=#{pnum}, username=#{username}, password=#{password},
+        remark=#{remark},p_fk=#{pFk} where eid=#{eid}
+    </update>
+    <!--删除指定员工之前老角色-->
+    <delete id="delEmpRoleByEid">
+         delete  from emp_role where emp_fk=#{0}
+    </delete>
+    <!--重新添加员工的角色-->
+    <insert id="addRole" parameterType="com.offcn.auth.bean.EmployeeBean">
+        insert into emp_role (role_fk, emp_fk) values
+        <foreach collection="list" separator="," item="e">
+            (#{e.role},#{e.eid})
+        </foreach>
+    </insert>
+</mapper>

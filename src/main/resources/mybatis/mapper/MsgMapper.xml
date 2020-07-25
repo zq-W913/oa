@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.offcn.msg.dao.MsgDao">
+    <select id="showAll" resultMap="msnMap">
+        select * from msg
+    </select>
+    <resultMap id="msnMap" type="com.offcn.msg.bean.MsgBean">
+        <result property="recvp" column="recvp"/>
+        <association property="employee" column="recvp" javaType="com.offcn.auth.bean.EmployeeBean"
+                     select="com.offcn.auth.dao.EmployeeDao.getEmpById"/>
+    </resultMap>
+    <delete id="delMsgById">
+        delete from msg where msgid in
+        <foreach collection="array" open="(" close=")" item="pid" separator=",">
+            #{pid}
+        </foreach>
+    </delete>
+</mapper>

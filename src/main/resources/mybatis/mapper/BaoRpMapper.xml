@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.offcn.usual.dao.BaoRepDao">
+    <insert id="addReplay" parameterType="com.offcn.usual.bean.BaoxiaoBean">
+      insert into baoxiaoreply (content, replytime, baoxiao_fk, bxstatus) values
+      (#{result},now(),#{bxid},#{bxstatus});
+  </insert>
+    <select id="getReplayByBxid" resultType="com.offcn.usual.bean.BaoxiaoreplyBean">
+        select * from baoxiaoreply where baoxiao_fk=#{0}
+    </select>
+</mapper>

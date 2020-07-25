@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.offcn.msg.dao.ForumDao">
+    <select id="findAll" resultType="com.offcn.msg.bean.ForumpostBean">
+        select * from forumpost
+    </select>
+
+
+    <select id="getForumByPk" resultMap="forumMap">
+        select * from forumpost where  forumid=#{0}
+    </select>
+    <resultMap id="forumMap" type="com.offcn.msg.bean.ForumpostBean">
+        <id property="forumid" column="forumid"/>
+        <result property="empFk3" column="emp_Fk3"/>
+        <association property="emp" column="emp_Fk3" javaType="com.offcn.auth.bean.EmployeeBean"
+                     select="com.offcn.auth.dao.EmployeeDao.getEmpById"/>
+        <collection property="pinglunList" column="forumid" ofType="com.offcn.msg.bean.EvaluateBean"
+                    select="getEvaluateByFid"/>
+    </resultMap>
+
+    <!--直接对主贴的评论-->
+    <select id="getEvaluateByFid" resultMap="evaluateMap">
+        select * from evaluate where forum_fk=#{0} and  evaid_fk is null
+    </select>
+
+    <resultMap id="evaluateMap" type="com.offcn.msg.bean.EvaluateBean">
+        <id property="evaid" column="evaid"/>
+        <result property="empFk4" column="emp_Fk4"/>
+        <result property="evaidFk" column="evaid_Fk"/>
+        <association property="emp" column="emp_Fk4" javaType="com.offcn.auth.bean.EmployeeBean"
+                     select="com.offcn.auth.dao.EmployeeDao.getEmpById"/>
+        <collection property="huifuList" column="evaid" ofType="com.offcn.msg.bean.EvaluateBean"
+                    select="getHuiFuByEvid"/>
+    </resultMap>
+
+    <!--查询评论的回复-->
+    <select id="getHuiFuByEvid" resultMap="evaluateMap">
+        select * from evaluate where evaid_fk=#{0}
+    </select>
+    <insert id="savaEvaid" parameterType="com.offcn.msg.bean.EvaluateBean">
+        insert into evaluate (forum_fk, emp_fk4, evaid_fk, evacontent, evatime) values
+        (#{forumFk},#{empFk4},#{evaidFk},#{evacontent},#{evatime});
+    </insert>
+
+</mapper>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.offcn.pro.dao.ProjectDao">
+    <select id="showAll" resultMap="proMap">
+        select * from project
+        <where>
+            <if test="make==1">
+                pid not in(select id from analysis)
+            </if>
+            <if test="make==2">
+                pid  in(select id from analysis)
+            </if>
+        </where>
+    </select>
+    <resultMap id="proMap" type="com.offcn.pro.bean.ProjectBean">
+        <id property="pid" column="pid"/>
+        <result property="comname" column="comname"/>
+        <result property="empFk" column="emp_fk"/>
+        <association property="customer" column="comname" javaType="com.offcn.cus.bean.CustomerBean"
+                     select="com.offcn.cus.dao.CustomerDao.selCusById"/>
+        <association property="employee" column="emp_fk" javaType="com.offcn.auth.bean.EmployeeBean"
+                     select="com.offcn.auth.dao.EmployeeDao.getEmpById"/>
+    </resultMap>
+    <delete id="delCusById">
+        delete from project where pid in
+        <foreach collection="array" open="(" close=")" item="pid" separator=",">
+            #{pid}
+        </foreach>
+    </delete>
+    <insert id="addPro">
+        insert into project (pname, comname, empcount, starttime, buildtime, cost, level, endtime, remark, emp_fk)
+         values (#{pname},#{comname},#{empcount},#{starttime},#{buildtime},#{cost},#{level},#{endtime},#{remark},#{empFk});
+    </insert>
+    <select id="getProById" resultMap="proMap">
+        select * from project where pid=#{0}
+    </select>
+    <update id="connet" parameterType="com.offcn.pro.bean.ProjectBean">
+        update project set pname=#{pname},comname=#{comname},empcount=#{empcount},starttime=#{starttime},
+        buildtime=#{buildtime},cost=#{cost},level=#{level},endtime=#{endtime},remark=#{remark},
+        emp_fk=#{empFk}  where pid=#{pid}
+    </update>
+</mapper>

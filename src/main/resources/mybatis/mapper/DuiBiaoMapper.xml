@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.offcn.duibiao.dao.DuibiaoDao">
+    <select id="findAll" resultMap="indexMap">
+        select * from indexvalue
+    </select>
+    <resultMap id="indexMap" type="com.offcn.duibiao.bean.IndexvalueBean">
+        <id property="inId" column="in_Id"/>
+        <result property="inTurnover" column="in_Turnover"/>
+        <result property="inBusiness" column="in_Business"/>
+        <result property="comnameFk" column="comname_Fk"/>
+        <result property="empFk5" column="emp_Fk5"/>
+        <result property="inFile" column="in_File"/>
+        <result property="inEndtime" column="in_Endtime"/>
+        <result property="inStarttime" column="in_Starttime"/>
+        <association property="emp" column="emp_Fk5" javaType="com.offcn.auth.bean.EmployeeBean"
+                     select="com.offcn.auth.dao.EmployeeDao.getEmpById"/>
+        <association property="company" column="comname_Fk" javaType="com.offcn.duibiao.bean.DatacollectBean"
+                     select="getCompanyByPK"/>
+    </resultMap>
+    <select id="getCompanyByPK" resultType="com.offcn.duibiao.bean.DatacollectBean">
+        select * from datacollect where  daid=#{0}
+    </select>
+
+
+    <select id="getDistinctCompany" resultType="com.offcn.duibiao.bean.DatacollectBean">
+            select * from datacollect where (datime,dacname)in(select max(datime),dacname from datacollect group by dacname)
+    </select>
+
+    <insert id="addIndex" parameterType="com.offcn.duibiao.bean.IndexvalueBean">
+        insert into indexvalue (in_turnover, in_business, comname_fk, in_remark, in_file, emp_fk5, in_starttime, in_endtime) values
+        (#{inTurnover},#{inBusiness},#{comnameFk},#{inRemark},#{inFile},#{empFk5},#{inStarttime},#{inEndtime});
+    </insert>
+
+    <select id="getComByCname" resultType="com.offcn.duibiao.bean.DatacollectBean">
+        select * from datacollect where  dacname=#{0}
+    </select>
+    <delete id="delDuiById">
+        delete from project where pid in
+        <foreach collection="array" open="(" close=")" item="pid" separator=",">
+            #{pid}
+        </foreach>
+    </delete>
+</mapper>
